@@ -5,7 +5,13 @@ const mysqlPassword = config.get('mysqlPassword')
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
-    database: 
+    password: mysqlPassword,
+    database: 'employeeTracker'
 
 })
+
+connection.connect((err) => {
+    if (err) throw err
+})
+
+module.exports = connection
