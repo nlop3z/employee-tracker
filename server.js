@@ -2,7 +2,7 @@ const logo = require('asciiart-logo')
 const colors = require('colors')
 const inquirer = require('inquirer')
 require('console.table')
-//const db = require('./db')
+const db = require('./db')
 const mysql = require('mysql2')
 const config = require('config')
 const mysqlPassword = config.get('mysqlPassword')
@@ -43,28 +43,24 @@ async function loadMainPrompts () {
                     value: 'VIEW_ALL_EMPLOYEES'
                 },
                 {
-                    name: 'View All Employees By Department',
-                    value: 'VIEW_ALL_EMPLOYEES_DEPARTMENT'
+                    name: 'View All Departments',
+                    value: 'VIEW_ALL_DEPARTMENTS'
                 },
                 {
-                    name: 'View All Employees By Manager',
-                    value: 'VIEW_ALL_EMPLOYEES_MANAGER'
+                    name: 'View All Roles',
+                    value: 'VIEW_ALL_ROLES'
                 },
                 {
                     name: 'Add Employee',
                     value: 'ADD_EMPLOYEE'
                 },
                 {
-                    name: 'Remove Employee',
-                    value: 'REMOVE_EMPLOYEE'
+                    name: 'Add Department',
+                    value: 'ADD_DEPARTMENT'
                 },
                 {
-                    name: 'Update Employee Role',
-                    value: 'UPDATE_EMPLOYEE_ROLE'
-                },
-                {
-                    name: 'Update Employee Manager',
-                    value: 'UPDATE_EMPLOYEE_MANAGER'
+                    name: 'Add a Role',
+                    value: 'ADD_ROLE'
                 },
                 {
                     name: 'Quit',
@@ -78,8 +74,23 @@ async function loadMainPrompts () {
 
         switch (userChoice) {
             case 'VIEW_ALL_EMPLOYEES':
-                console.log("test")
+                //console.log("test")
                 viewAllEmployees()
+                break
+            case 'VIEW_ALL_DEPARTMENTS':
+                viewAllDepartments()
+                break
+            case 'VIEW_ALL_ROLES':
+                viewAllRoles()
+                break
+            case 'ADD_EMPLOYEE':
+                addEmployee()
+                break
+            case 'ADD_DEPARTMENT':
+                addDepartment()
+                break
+            case 'ADD_ROLE':
+                addRole()
                 break
             default:
                 quit()
@@ -95,6 +106,32 @@ const viewAllEmployees = () => {
     })
     .then(() => loadMainPrompts())
 }
+
+const viewAllDepartments = () => {
+    db.findAllDepartments()
+    //.then
+}
+
+const viewAllRoles = () => {
+    db.findAllRoles()
+    //.then
+}
+
+const addEmployee = () => {
+    db.addEmployee()
+    //.then
+}
+
+const addDepartment = () => {
+    db.addDepartment()
+    //.then
+}
+
+const addRole = () => {
+    db.addRole()
+    //.then
+}
+
 const quit = () => {
     console.log('Goodbye!'.green)
     process.exit()
