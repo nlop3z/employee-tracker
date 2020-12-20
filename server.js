@@ -1,8 +1,24 @@
 const logo = require('asciiart-logo')
 const colors = require('colors')
-const { prompt } = require('inquirer')
+const inquirer = require('inquirer')
 require('console.table')
-const db = require('./db')
+//const db = require('./db')
+const mysql = require('mysql2')
+const config = require('config')
+const mysqlPassword = config.get('mysqlPassword')
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: mysqlPassword,
+    database: 'employees'
+
+})
+
+connection.connect((err) => {
+    if (err) throw err
+    console.log('database connected')
+})
 
 const init = () => {
     //renders logo
@@ -13,10 +29,10 @@ const init = () => {
     loadMainPrompts()
 }
 
-const loadMainPrompts = () => {
-    console.log('Welcome to the Employee Tracker\n'.purple)
+async function loadMainPrompts () {
+    console.log('Welcome to the Employee Tracker\n'.green)
 
-    prompt([
+    await inquirer.prompt(
         {
             type: 'list',
             name: 'choice',
@@ -57,11 +73,12 @@ const loadMainPrompts = () => {
             ]
 
         }
-    ]).then(res => {
+    ).then(res => {
         let userChoice = res.choice
 
         switch (userChoice) {
             case 'VIEW_ALL_EMPLOYEES':
+                console.log("test")
                 viewAllEmployees()
                 break
             default:
@@ -79,7 +96,7 @@ const viewAllEmployees = () => {
     .then(() => loadMainPrompts())
 }
 const quit = () => {
-    console.log('Goodbye!'.purple)
+    console.log('Goodbye!'.green)
     process.exit()
 }
 
