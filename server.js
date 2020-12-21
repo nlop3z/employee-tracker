@@ -145,8 +145,12 @@ const addEmployee = () => {
             message: "Please select a role",
             choices: ['HR Associate', 'HR Manager', 'Sales Associate', 'Sales Manager', 'Accounting Associate', 'Accounting Manager']
         }
-    ]) 
-    .then(() => loadMainPrompts())
+    ])
+    .then(employee => {
+        db.addEmployee(employee)
+        .then(() => console.log(`Added ${employee.firstName, employee.last_name, employee.role_id} to database`)) 
+        .then(() => loadMainPrompts()) 
+    })
 }
 
 function addDepartment() {
@@ -177,25 +181,28 @@ function addRole() {
         inquirer.prompt([
             {
                 name: "title",
-                message: "Please enter the name of the new role"
+                message: "Please enter the name of the new role."
             },
             {
                 name: "salary",
-                message: "Please enter a salary for the role"
+                message: "Please enter a salary for the role."
             },
             {
                 type: "list",
                 name: "department_id",
-                message: "Please select a department for the role",
-                choices: ['Accounting', 'Human Resources', 'Management', 'Sales']
+                message: "Which department does the role belong to?",
+                choices: departmentChoices
             },
         ])
+        .then(role => {
+            let singleRole = role;
+            console.log(singleRole);
+            db.addRole(singleRole)
+            .then(() => console.log(`Added ${role.title} to database`))
+            .then(() => loadMainPrompts())
+            })
     })
-    .then(role => {
-        db.addRole(role)
-        .then(() => console.log(`Added ${role.title} to database`))
-        .then(() => loadMainPrompts())
-        })
+    
 }
 
 const quit = () => {
