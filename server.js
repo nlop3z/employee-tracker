@@ -132,22 +132,29 @@ const addEmployee = () => {
     inquirer.prompt([
         {
             name: "firstName",
-            message: "Please enter a first name"
+            message: "Please enter a first name."
         },
         {
             name: "lastName",
-            message: "Please enter a last name"
+            message: "Please enter a last name."
         },
         {
             type: "list",
             name: "role",
-            message: "Please select a role",
+            message: "Please select a role.",
             choices: ['HR Associate', 'HR Manager', 'Sales Associate', 'Sales Manager', 'Accounting Associate', 'Accounting Manager']
         }
+        {
+            type: "list",
+            name: "id",
+            message: "Please select a department ID.",
+            choices: departmentChoices
+        }
+
     ])
     .then(employee => {
         db.addEmployee(employee)
-        .then(() => console.log(`Added ${employee.firstName, employee.last_name, employee.role_id} to database`)) 
+        .then(() => console.log(`Added ${employee.firstName, employee.last_name, employee.role_id, employee.manager_id} to database`)) 
         .then(() => loadMainPrompts()) 
     })
 }
