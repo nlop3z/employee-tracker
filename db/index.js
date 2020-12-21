@@ -23,18 +23,14 @@ class DB {
     }
     addEmployee() {
         connection.query(
-               `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);`, [ data.first_name, data.last_name, integer.role_id, integer.manager_id ]
+               `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);`, [ loadMainPrompts.first_name, loadMainPrompts.last_name, integer.role_id, integer.manager_id ]
            )
     }
-    addDepartment() {
-        return this.connection.promise().query(
-            `INSERT INTO department (name) VALUES (?);`
-        )
+    addDepartment(department) {
+        return this.connection.promise().query("INSERT INTO department SET (?)", department);
     }
     addRole() {
-        return this.connection.promise().query(
-            `INSERT INTO role (title, department_id, salary) VALUES (?, ?, ?);`
-        )
+        return this.connection.promise().query("INSERT INTO role SET ?", role);
     }
 }
 module.exports = new DB(connection)

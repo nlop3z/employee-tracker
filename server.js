@@ -69,92 +69,6 @@ async function loadMainPrompts () {
             ],
 
         },
-        {
-            type: "input",
-            name: "name",
-            message: "Please enter the name of the new role",
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add a Role") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
-        {
-            type: "list",
-            name: "department",
-            message: "Please select a department",
-            choices: ['Accounting', 'Human Resources', 'Management', 'Sales'],
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add a Role") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
-        {
-            type: "input",
-            name: "salary",
-            message: "Please enter a salary",
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add a Role") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
-        {
-            type: "input",
-            name: "department",
-            message: "Please add a department",
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add Department") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
-        {
-            type: "input",
-            name: "firstName",
-            message: "Please enter a first name",
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add Employee") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
-        {
-            type: "input",
-            name: "lastName",
-            message: "Please enter a last name",
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add Employee") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
-        {
-            type: "list",
-            name: "role",
-            message: "Please select a role",
-            choices: ['HR Associate', 'HR Manager', 'Sales Associate', 'Sales Manager', 'Accounting Associate', 'Accounting Manager'],
-            when: function (loadMainPrompts) {
-                if (loadMainPrompts.function == "Add Employee") {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-        },
 
     ).then(res => {
         let userChoice = res.choice
@@ -205,7 +119,6 @@ const viewAllDepartments = () => {
 }
 
 const viewAllRoles = () => {
-    console.log("viewAllRoles");
     db.findAllRoles()
     .then(([rows]) => {
         let employees = rows
@@ -217,20 +130,72 @@ const viewAllRoles = () => {
 
 const addEmployee = () => {
     db.addEmployee()
-    //add something here
+    prompt([
+        {
+            name: "firstName",
+            message: "Please enter a first name"
+        },
+        {
+            name: "lastName",
+            message: "Please enter a last name"
+        },
+        {
+            type: "list",
+            name: "role",
+            message: "Please select a role",
+            choices: ['HR Associate', 'HR Manager', 'Sales Associate', 'Sales Manager', 'Accounting Associate', 'Accounting Manager']
+        }
+    ]) 
     .then(() => loadMainPrompts())
 }
 
 const addDepartment = () => {
-    db.addDepartment()
-    //.then
-    .then(() => loadMainPrompts())
+    prompt([
+        {
+            name: "name",
+            message: "What is the name of the department?"
+        }
+
+    ])
+    .then(res => {
+        let name = res;
+        db.addDepartment(name)
+        .then(() => console.log(`Added ${name.name} to database`))
+        .then(() => loadMainPrompts())
+    })
 }
 
 const addRole = () => {
-    db.addRole()
-    //.then
-    .then(() => loadMainPrompts())
+    db.findAllDepartments()
+    .then(([rows]) => {
+        let departments = rows;
+        const departmentChoices = departments.map(({ id, name }) => ({
+            name: name,
+            value: id
+        }));
+
+        prompt([
+            {
+                name: "title",
+                message: "Please enter the name of the new role"
+            },
+            {
+                name: "salary",
+                message: "Please enter a salary for the role"
+            },
+            {
+                type: "list",
+                name: "department_id",
+                message: "Please select a department for the role",
+                choices: ['Accounting', 'Human Resources', 'Management', 'Sales']
+            },
+        ])
+    })
+    .then(role => {
+        db.createRole(role)
+        .then(() => console.log(`Added ${role.title} to database`))
+        .then(() => loadMainPrompts())
+        })
 }
 
 const quit = () => {
