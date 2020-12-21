@@ -1,6 +1,6 @@
 const logo = require('asciiart-logo')
 const colors = require('colors')
-const inquirer = require('inquirer')
+const { prompt } = require('inquirer')
 require('console.table')
 const db = require('./db')
 const mysql = require('mysql2')
@@ -30,10 +30,10 @@ const init = () => {
     loadMainPrompts()
 }
 
-async function loadMainPrompts () {
+async function loadMainPrompts() {
     console.log('Welcome to the Employee Tracker\n'.green)
 
-    await inquirer.prompt(
+    await prompt(
         {
             type: 'list',
             name: 'choice',
@@ -100,36 +100,38 @@ async function loadMainPrompts () {
 }
 const viewAllEmployees = () => {
     db.findAllEmployees()
-    .then(([rows]) => {
-        let employees = rows
-        console.log('\n');
-        console.table(employees)
-    })
-    .then(() => loadMainPrompts())
+        .then(([rows]) => {
+            let employees = rows
+            console.log('\n');
+            console.table(employees)
+        })
+        .then(() => loadMainPrompts())
 }
 
 const viewAllDepartments = () => {
     db.findAllDepartments()
-    .then(([rows]) => {
-        let employees = rows
-        console.log('\n');
-        console.table(employees)
-    })
-    .then(() => loadMainPrompts())
+        .then(([rows]) => {
+            let employees = rows
+            console.log('\n');
+            console.table(employees)
+        })
+        .then(() => loadMainPrompts())
 }
 
 const viewAllRoles = () => {
     db.findAllRoles()
-    .then(([rows]) => {
-        let employees = rows
-        console.log('\n');
-        console.table(employees)
-    })
-    .then(() => loadMainPrompts())
+        .then(([rows]) => {
+            let employees = rows
+            console.log('\n');
+            console.table(employees)
+        })
+        .then(() => loadMainPrompts())
 }
 
-const addEmployee = () => {
-    inquirer.prompt([
+async function addEmployee() {
+    const roles = await db.findAllRoles();
+    const employees = await db.findAllEmployees();
+    const employee = await prompt([
         {
             name: "firstName",
             message: "Please enter a first name."
@@ -137,78 +139,91 @@ const addEmployee = () => {
         {
             name: "lastName",
             message: "Please enter a last name."
-        },
-        {
-            type: "list",
-            name: "role",
-            message: "Please select a role.",
-            choices: ['HR Associate', 'HR Manager', 'Sales Associate', 'Sales Manager', 'Accounting Associate', 'Accounting Manager']
-        }
-        {
-            type: "list",
-            name: "id",
-            message: "Please select a department ID.",
-            choices: departmentChoices
         }
 
-    ])
-    .then(employee => {
-        db.addEmployee(employee)
-        .then(() => console.log(`Added ${employee.firstName, employee.last_name, employee.role_id, employee.manager_id} to database`)) 
-        .then(() => loadMainPrompts()) 
-    })
+    ]);
+    const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id
+    }));
+    const { roleId } = await prompt(
+        {
+            type: "list",
+            name: "roleId",
+            message: "What is the employees role?",
+            choices: roleChoices
+        }
+    )
+    employee.role_id = roleId;
+    const managerChoices = employees.map(({ id, first_name, last_name }) => ({
+        name: `${first_name} ${last_name}`,
+        value: id
+    }));
+    managerChoices.unshift({ name: "None", value: null });
+
+    const { managerId } = await prompt(
+        {
+            type: "list",
+            name: "managerId",
+            message: "Who is the employee's manager?",
+            choices: managerChoices
+        }
+    );
+    employee.manager_id = managerId;
+    await db.addEmployee(employee);
+    loadMainPrompts();
 }
 
 function addDepartment() {
-    inquirer.prompt([
+    prompt([
         {
             name: "name",
             message: "What is the name of the department?"
         }
 
     ])
-    .then(res => {
-        let name = res;
-        db.addDepartment(name)
-        .then(() => console.log(`Added ${name.name} to database`))
-        .then(() => loadMainPrompts())
-    })
+        .then(res => {
+            let name = res;
+            db.addDepartment(name)
+                .then(() => console.log(`Added ${name.name} to database`))
+                .then(() => loadMainPrompts())
+        })
 }
 
 function addRole() {
     db.findAllDepartments()
-    .then(([rows]) => {
-        let departments = rows;
-        const departmentChoices = departments.map(({ id, name }) => ({
-            name: name,
-            value: id
-        }));
+        .then(([rows]) => {
+            let departments = rows;
+            const departmentChoices = departments.map(({ id, name }) => ({
+                name: name,
+                value: id
+            }));
 
-        inquirer.prompt([
-            {
-                name: "title",
-                message: "Please enter the name of the new role."
-            },
-            {
-                name: "salary",
-                message: "Please enter a salary for the role."
-            },
-            {
-                type: "list",
-                name: "department_id",
-                message: "Which department does the role belong to?",
-                choices: departmentChoices
-            },
-        ])
-        .then(role => {
-            let singleRole = role;
-            console.log(singleRole);
-            db.addRole(singleRole)
-            .then(() => console.log(`Added ${role.title} to database`))
-            .then(() => loadMainPrompts())
-            })
-    })
-    
+            prompt([
+                {
+                    name: "title",
+                    message: "Please enter the name of the new role."
+                },
+                {
+                    name: "salary",
+                    message: "Please enter a salary for the role."
+                },
+                {
+                    type: "list",
+                    name: "department_id",
+                    message: "Which department does the role belong to?",
+                    choices: departmentChoices
+                },
+            ])
+                .then(role => {
+                    let singleRole = role;
+                    console.log(singleRole);
+                    db.addRole(singleRole)
+                        .then(() => console.log(`Added ${role.title} to database`))
+                        .then(() => loadMainPrompts())
+                })
+        })
+
 }
 
 const quit = () => {
