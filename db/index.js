@@ -23,7 +23,7 @@ class DB {
     }
     addEmployee(employee) {
         connection.query(
-               `INSERT INTO employee (employee.first_name, employee.last_name, role_id, manager_id) VALUES (?,?,?,?);`, [ employee.first_name, employee.last_name, employee.role_id, employee.manager_id]
+               `INSERT INTO employee (employee.first_name, employee.last_name, employee.role_id VALUES (?,?,?);`, [ employee.firstName, employee.lastName, employee.role]
            )
     }
     addDepartment(department) {

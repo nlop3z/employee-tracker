@@ -129,7 +129,6 @@ const viewAllRoles = () => {
 }
 
 const addEmployee = () => {
-    db.addEmployee()
     inquirer.prompt([
         {
             name: "firstName",
