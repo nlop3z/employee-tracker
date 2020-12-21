@@ -66,9 +66,96 @@ async function loadMainPrompts () {
                     name: 'Quit',
                     value: 'QUIT'
                 }
-            ]
+            ],
 
-        }
+        },
+        {
+            type: "input",
+            name: "name",
+            message: "Please enter the name of the new role",
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add a Role") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+        {
+            type: "list",
+            name: "department",
+            message: "Please select a department",
+            choices: ['Accounting', 'Human Resources', 'Management', 'Sales'],
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add a Role") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "Please enter a salary",
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add a Role") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+        {
+            type: "input",
+            name: "department",
+            message: "Please add a department",
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add Department") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+        {
+            type: "input",
+            name: "firstName",
+            message: "Please enter a first name",
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add Employee") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+        {
+            type: "input",
+            name: "lastName",
+            message: "Please enter a last name",
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add Employee") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+        {
+            type: "list",
+            name: "role",
+            message: "Please select a role",
+            choices: ['HR Associate', 'HR Manager', 'Sales Associate', 'Sales Manager', 'Accounting Associate', 'Accounting Manager'],
+            when: function (loadMainPrompts) {
+                if (loadMainPrompts.function == "Add Employee") {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+        },
+
     ).then(res => {
         let userChoice = res.choice
 
@@ -130,7 +217,7 @@ const viewAllRoles = () => {
 
 const addEmployee = () => {
     db.addEmployee()
-    //.then
+    //add something here
     .then(() => loadMainPrompts())
 }
 
