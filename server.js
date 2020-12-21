@@ -7,6 +7,7 @@ const mysql = require('mysql2')
 const config = require('config')
 const mysqlPassword = config.get('mysqlPassword')
 
+
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -75,24 +76,23 @@ async function loadMainPrompts () {
 
         switch (userChoice) {
             case 'VIEW_ALL_EMPLOYEES':
-                //console.log("test")
                 viewAllEmployees()
-                break
+                break;
             case 'VIEW_ALL_DEPARTMENTS':
                 viewAllDepartments()
-                break
+                break;
             case 'VIEW_ALL_ROLES':
                 viewAllRoles()
-                break
+                break;
             case 'ADD_EMPLOYEE':
                 addEmployee()
-                break
+                break;
             case 'ADD_DEPARTMENT':
                 addDepartment()
-                break
+                break;
             case 'ADD_ROLE':
                 addRole()
-                break
+                break;
             default:
                 quit()
         }
@@ -130,7 +130,7 @@ const viewAllRoles = () => {
 
 const addEmployee = () => {
     db.addEmployee()
-    prompt([
+    inquirer.prompt([
         {
             name: "firstName",
             message: "Please enter a first name"
@@ -149,8 +149,8 @@ const addEmployee = () => {
     .then(() => loadMainPrompts())
 }
 
-const addDepartment = () => {
-    prompt([
+function addDepartment() {
+    inquirer.prompt([
         {
             name: "name",
             message: "What is the name of the department?"
@@ -165,7 +165,7 @@ const addDepartment = () => {
     })
 }
 
-const addRole = () => {
+function addRole() {
     db.findAllDepartments()
     .then(([rows]) => {
         let departments = rows;
@@ -174,7 +174,7 @@ const addRole = () => {
             value: id
         }));
 
-        prompt([
+        inquirer.prompt([
             {
                 name: "title",
                 message: "Please enter the name of the new role"
@@ -192,7 +192,7 @@ const addRole = () => {
         ])
     })
     .then(role => {
-        db.createRole(role)
+        db.addRole(role)
         .then(() => console.log(`Added ${role.title} to database`))
         .then(() => loadMainPrompts())
         })
