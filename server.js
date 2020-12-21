@@ -109,27 +109,41 @@ const viewAllEmployees = () => {
 
 const viewAllDepartments = () => {
     db.findAllDepartments()
-    //.then
+    .then(([rows]) => {
+        let employees = rows
+        console.log('\n');
+        console.table(employees)
+    })
+    .then(() => loadMainPrompts())
 }
 
 const viewAllRoles = () => {
+    console.log("viewAllRoles");
     db.findAllRoles()
-    //.then
+    .then(([rows]) => {
+        let employees = rows
+        console.log('\n');
+        console.table(employees)
+    })
+    .then(() => loadMainPrompts())
 }
 
 const addEmployee = () => {
     db.addEmployee()
     //.then
+    .then(() => loadMainPrompts())
 }
 
 const addDepartment = () => {
     db.addDepartment()
     //.then
+    .then(() => loadMainPrompts())
 }
 
 const addRole = () => {
     db.addRole()
     //.then
+    .then(() => loadMainPrompts())
 }
 
 const quit = () => {
