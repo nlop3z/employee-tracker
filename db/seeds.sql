@@ -1,4 +1,4 @@
-INSERT INTO departments
+INSERT INTO department
 (name)
 VALUES
 ('Human Resources'),

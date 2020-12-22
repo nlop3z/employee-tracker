@@ -129,9 +129,8 @@ const viewAllRoles = () => {
 }
 
 async function addEmployee() {
-    const roles = await db.findAllRoles();
-    const employees = await db.findAllEmployees();
     const employee = await prompt([
+        
         {
             name: "firstName",
             message: "Please enter a first name."
@@ -142,10 +141,14 @@ async function addEmployee() {
         }
 
     ]);
-    const roleChoices = roles.map(({ id, title }) => ({
-        name: title,
-        value: id
-    }));
+    let roleChoices = null;
+    await db.findAllRoles()
+    .then(([rows]) => {
+        roleChoices = rows.map(({ id, title }) => ({
+            name: title,
+            value: id
+        }));
+    });
     const { roleId } = await prompt(
         {
             type: "list",
@@ -155,12 +158,14 @@ async function addEmployee() {
         }
     )
     employee.role_id = roleId;
-    const managerChoices = employees.map(({ id, first_name, last_name }) => ({
-        name: `${first_name} ${last_name}`,
-        value: id
-    }));
-    managerChoices.unshift({ name: "None", value: null });
-
+    let managerChoices = null;
+    await db.findAllEmployees()
+    .then(([rows]) => {
+        managerChoices = rows.map(({ first_name, last_name, id}) => ({
+            name: first_name + " "+ last_name,
+            value: id
+        }));
+    });
     const { managerId } = await prompt(
         {
             type: "list",
